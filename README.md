@@ -17,6 +17,8 @@ Run MA2 on PC
 
 ADD user "apc20" password "remote"
 
+Turn on web remote (Global settings/ remote/ login enable
+
 
 Start my code from CMD line
 
