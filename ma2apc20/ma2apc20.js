@@ -9,7 +9,7 @@ var client = new W3CWebSocket('ws://localhost:80/'); //U can change localhost(12
 page_mode = 1;   //set page select mode - 0-off, 1-only exec buttons(5), 2-exec buttons and faders together
 midi_in = 'Akai APC20 0';     //set correct midi in device name
 midi_out = 'Akai APC20 1';    //set correct midi out device name
-display_mode = 1;   //display mode 1 = default, 2 = green
+display_mode = 1;   //display mode 1 = default, 2 = dark green
 
 
 
@@ -130,12 +130,6 @@ sleep(1000, function () {
     // executes after one second, and blocks the thread
 });
 
-/*
-//clear led matrix and led status - display .2 
-for (i = 0; i < 90; i++) {
-    output.send('noteon', { note: i, velocity: ledmatrix[i], channel: 0 });
-    sleep(10, function () { });
-}*/
 
 
 //turn on page select buttons
@@ -280,7 +274,7 @@ input.on('cc', function (msg) {
 
     if (msg.controller == 14) {
         grandmaster = faderValue[msg.value] * 100;
-        if (blackout == 0) {
+        if (blackout == 1) {
             client.send('{"command":"SpecialMaster 2.1 At ' + grandmaster + '","session":' + session + ',"requestType":"command","maxRequests":0}');
         }
     }
@@ -312,7 +306,7 @@ client.onclose = function () {
 client.onmessage = function (e) {
 
     request = request + 1;
-    //console.log(request);
+
     if (request >= 9) {
         client.send('{"session":' + session + '}');
         client.send('{"requestType":"getdata","data":"set,clear,solo,high","session":' + session + ',"maxRequests":1}');
@@ -320,11 +314,10 @@ client.onmessage = function (e) {
     }
 
     if (typeof e.data === 'string') {
-        //console.log("Received: '" + e.data + "'");
-        //console.log(e.data);
+
 
         obj = JSON.parse(e.data);
-        //console.log(obj);
+
 
         if (obj.status == "server ready") {
             console.log("SERVER READY");
