@@ -188,7 +188,7 @@ input.on('noteon', function (msg) {
         if (page_mode > 0) {
             output.send('noteon', { note: (pageIndex + 82), velocity: 0, channel: 0 });
             pageIndex = msg.note - 82;
-            output.send('noteon', { note: (msg.note), velocity: 1, channel: 0 });
+            output.send('noteon', { note: (msg.note), velocity: blackout, channel: 0 });
         }
         if (page_mode == 2) {
             pageIndex2 = pageIndex;
@@ -209,6 +209,7 @@ input.on('noteon', function (msg) {
             output.send('noteon', { note: 80, velocity: 0, channel: 0 });
             blackout = 1;
         }
+        output.send('noteon', { note: (pageIndex + 82), velocity: blackout, channel: 0 });
     }
 
     if (msg.note == 81) {//Display_mode
