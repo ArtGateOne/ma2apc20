@@ -106,6 +106,8 @@ Black Out
 
 -------------
 
+
+
 last fader 
 
 Grand master
@@ -114,3 +116,10 @@ Grand master
 --------------
 
 ENCODER - not programed
+
+
+-----------------
+
+!!! Program not work with old ma2onpc
+
+!! Program not work - if any executor have more then 1 row ! (thx Philipp Darpe)
