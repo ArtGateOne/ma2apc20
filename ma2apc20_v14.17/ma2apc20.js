@@ -1,4 +1,4 @@
-//ma2apc20 by ArtGateOne beta 1
+//ma2apc20 by ArtGateOne beta 2
 var easymidi = require('easymidi');
 var W3CWebSocket = require('websocket')
     .w3cwebsocket;
@@ -14,6 +14,8 @@ display_mode = 1;   //display mode 1 = default, 2 = dark green
 
 
 //global variables
+var encodernr = 0;
+var encoderenabled = 0;
 var blackout = 1; //1 off, 2 on
 var grandmaster = 100;
 var wing = 1;
@@ -168,7 +170,13 @@ input.on('noteon', function (msg) {
         client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons52[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
     }
     if (msg.note == 51) {
-        client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons51[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+        if (encoderenabled === 1) {
+            if (msg.channel < 4) {
+                encodernr = msg.channel;
+            }
+        } else {
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons51[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+        }
     }
     if (msg.note == 50) {
         client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + msg.channel + ',"pageIndex":' + pageIndex2 + ',"buttonId":2,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
@@ -183,8 +191,6 @@ input.on('noteon', function (msg) {
 
 
     if (msg.note >= 82 && msg.note <= 86) {//page select
-
-
         if (page_mode > 0) {
             output.send('noteon', { note: (pageIndex + 82), velocity: 0, channel: 0 });
             pageIndex = msg.note - 82;
@@ -193,25 +199,22 @@ input.on('noteon', function (msg) {
         if (page_mode == 2) {
             pageIndex2 = pageIndex;
         }
-
-
     }
 
 
 
-    if (msg.note == 80) {//Master - blackout
-        if (blackout == 1) {
-            client.send('{"command":"SpecialMaster 2.1 At 0","session":' + session + ',"requestType":"command","maxRequests":0}');
-            output.send('noteon', { note: 80, velocity: 1, channel: 0 });
-            blackout = 2;
+    if (msg.note == 80) {//Encoder_enabled
+        if (encoderenabled === 0) {
+            output.send('noteon', { note: 80, velocity: 2, channel: 0 });
+            encoderenabled = 1;
         } else {
-            client.send('{"command":"SpecialMaster 2.1 At ' + grandmaster + '","session":' + session + ',"requestType":"command","maxRequests":0}');
             output.send('noteon', { note: 80, velocity: 0, channel: 0 });
-            blackout = 1;
+            encoderenabled = 0;
         }
         output.send('noteon', { note: (pageIndex + 82), velocity: blackout, channel: 0 });
     }
 
+    /*
     if (msg.note == 81) {//Display_mode
         if (display_mode == 1) {
             output.send('noteon', { note: 81, velocity: 1, channel: 0 });
@@ -221,9 +224,7 @@ input.on('noteon', function (msg) {
             display_mode = 1;
         }
     }
-
-
-
+    */
 
 });
 
@@ -250,7 +251,11 @@ input.on('noteoff', function (msg) {
         client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons52[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
     }
     if (msg.note == 51) {
-        client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons51[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
+        if (encoderenabled === 1) {
+
+        } else {
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons51[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
+        }
     }
     if (msg.note == 50) {
         client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + msg.channel + ',"pageIndex":' + pageIndex2 + ',"buttonId":2,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
@@ -263,23 +268,35 @@ input.on('noteoff', function (msg) {
     }
 
 
-
-
 });
 
 input.on('cc', function (msg) {
 
-    if (msg.controller == 7) {
+    if (msg.controller == 7) {//fader_1_8
         client.send('{"requestType":"playbacks_userInput","execIndex":' + msg.channel + ',"pageIndex":' + pageIndex2 + ',"faderValue":' + faderValue[msg.value] + ',"type":1,"session":' + session + ',"maxRequests":0}');
     }
 
-    if (msg.controller == 14) {
+    if (msg.controller == 14) {//grand_master
         grandmaster = faderValue[msg.value] * 100;
-        if (blackout == 1) {
-            client.send('{"command":"SpecialMaster 2.1 At ' + grandmaster + '","session":' + session + ',"requestType":"command","maxRequests":0}');
+        if (grandmaster === 100) {
+            blackout = 1;
+        } else {
+            blackout = 2;
         }
+
+        client.send('{"command":"SpecialMaster 2.1 At ' + grandmaster + '","session":' + session + ',"requestType":"command","maxRequests":0}');
+        output.send('noteon', { note: (pageIndex + 82), velocity: blackout, channel: 0 });
     }
 
+    if (msg.controller == 47) {//encoder
+        if (encoderenabled === 1) {
+            if (msg.value > 1 && msg.value < 64) {
+                client.send('{"command":LUA "gma.canbus.encoder(' + encodernr + ',2,pressed)","session":' + session + ',"requestType":"command","maxRequests":0}');
+            } else if (msg.value > 64 && msg.value < 127) {
+                client.send('{"command":LUA "gma.canbus.encoder(' + encodernr + ',-2,pressed)","session":' + session + ',"requestType":"command","maxRequests":0}');
+            }
+        }
+    }
 
 });
 
@@ -386,7 +403,7 @@ client.onmessage = function (e) {
 
                             for (i = 0; i < 5; i++) {
                                 var m = 3;
-                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = blackout; }
+                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = 1; }
                                 else if ((obj.itemGroups[0].items[l][i].i.c) == "#000000") { m = 0; }
                                 else { m = 5; }
                                 output.send('noteon', { note: j, velocity: m, channel: i });
@@ -394,7 +411,7 @@ client.onmessage = function (e) {
                             l++;
                             for (i = 0; i <= 2; i++) {
                                 var m = 3;
-                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = blackout; }
+                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = 1; }
                                 else if ((obj.itemGroups[0].items[l][i].i.c) == "#000000") { m = 0 }
                                 else { m = 5; }
                                 output.send('noteon', { note: j, velocity: m, channel: i + 5 });
@@ -407,17 +424,27 @@ client.onmessage = function (e) {
 
                             for (i = 0; i < 5; i++) {
                                 var m = 0;
-                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = blackout; }
+                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = 1; }
                                 output.send('noteon', { note: j, velocity: m, channel: i });
                             }
                             l++;
                             for (i = 0; i < 3; i++) {
                                 var m = 0;
-                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = blackout; }
+                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = 1; }
                                 output.send('noteon', { note: j, velocity: m, channel: i + 5 });
                             }
                             l++;
                             j--;
+                            if (encoderenabled === 1) {
+                                for (i = 0; i < 8; i++) {
+                                    m = 0;
+                                    if (i === encodernr) {
+                                        m = 1;
+                                    }
+                                    output.send('noteon', { note: j, velocity: m, channel: i });
+                                }
+                                break;
+                            }
                         }
                     } else if (display_mode == 2) {
                         var j = 53;
@@ -426,14 +453,14 @@ client.onmessage = function (e) {
 
                             for (i = 0; i < 5; i++) {
 
-                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = blackout; }
+                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = 1; }
                                 else { m = 0; }
                                 output.send('noteon', { note: j, velocity: m, channel: i });
                             }
                             l++;
                             for (i = 0; i <= 2; i++) {
                                 var m = 3;
-                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = blackout; }
+                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = 1; }
                                 else { m = 0; }
                                 output.send('noteon', { note: j, velocity: m, channel: i + 5 });
                             }
@@ -445,19 +472,29 @@ client.onmessage = function (e) {
 
                             for (i = 0; i < 5; i++) {
 
-                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = blackout; }
+                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = 1; }
                                 else { m = 0; }
                                 output.send('noteon', { note: j, velocity: m, channel: i });
                             }
                             l++;
                             for (i = 0; i < 3; i++) {
 
-                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = blackout; }
+                                if (obj.itemGroups[0].items[l][i].isRun == 1) { m = 1; }
                                 else { m = 0; }
                                 output.send('noteon', { note: j, velocity: m, channel: i + 5 });
                             }
                             l++;
                             j--;
+                            if (encoderenabled === 1) {
+                                for (i = 0; i < 8; i++) {
+                                    m = 0;
+                                    if (i === encodernr) {
+                                        m = 1;
+                                    }
+                                    output.send('noteon', { note: j, velocity: m, channel: i });
+                                }
+                                break;
+                            }
                         }
                     }
 
@@ -473,7 +510,7 @@ client.onmessage = function (e) {
                             if ((obj.itemGroups[0].items[0][i].i.c) != "#000000") { m = 1; }
                             if (i == 0 && wing == 1 && pageIndex2 == 0) { m = 1; }
                             output.send('noteon', { note: 49, velocity: m, channel: i });
-                            if (obj.itemGroups[0].items[0][i].isRun) { m = blackout; }
+                            if (obj.itemGroups[0].items[0][i].isRun) { m = 1; }
                             else { m = 0; }
                             output.send('noteon', { note: 50, velocity: m, channel: i });
                             output.send('noteon', { note: 48, velocity: m, channel: i });
@@ -484,7 +521,7 @@ client.onmessage = function (e) {
                             if ((obj.itemGroups[0].items[1][i].i.c) == "#000000") { m = 0; }
                             else { m = 1; }
                             output.send('noteon', { note: 49, velocity: m, channel: i + 5 });
-                            if (obj.itemGroups[0].items[1][i].isRun) { m = blackout; }
+                            if (obj.itemGroups[0].items[1][i].isRun) { m = 1; }
                             else { m = 0; }
                             output.send('noteon', { note: 50, velocity: m, channel: i + 5 });
                             output.send('noteon', { note: 48, velocity: m, channel: i + 5 });
@@ -494,7 +531,7 @@ client.onmessage = function (e) {
                         j = 0;
                         for (var i = 0; i < 5; i++) {
                             output.send('noteon', { note: 49, velocity: 0, channel: i });
-                            if (obj.itemGroups[0].items[0][i].isRun) { m = blackout; }
+                            if (obj.itemGroups[0].items[0][i].isRun) { m = 1; }
                             else { m = 0; }
                             output.send('noteon', { note: 50, velocity: m, channel: i });
                             output.send('noteon', { note: 48, velocity: 0, channel: i });
@@ -503,7 +540,7 @@ client.onmessage = function (e) {
 
                         for (var i = 0; i < 3; i++) {
                             output.send('noteon', { note: 49, velocity: 0, channel: i + 5 });
-                            if (obj.itemGroups[0].items[1][i].isRun) { m = blackout; }
+                            if (obj.itemGroups[0].items[1][i].isRun) { m = 1; }
                             else { m = 0; }
                             output.send('noteon', { note: 50, velocity: m, channel: i + 5 });
                             output.send('noteon', { note: 48, velocity: 0, channel: i + 5 });
