@@ -58,25 +58,26 @@ SET WIEW TO 2 ROWS EXECUTOR VIEW IN MA2
 
 EXECUTOR BUTTONS
 
-100 - 108
+101 - 109
 
-110 - 118
+111 - 119
 
-120 - 128
+121 - 129
 
-130 - 138
+131 - 139
 
-140 - 148
+141 - 149
 
+151 - 159
 
-150 - 158
-
-160 - 168
+161 - 169 (if encoder is enabled - select encoder)
 
 
 
 FADER BUTTONS
+
 1 - 8
+
 
 FADERS
 
@@ -87,36 +88,35 @@ FADERS
 
 BUTTONS ON THE RIGHT SIDE (SCENE LAUCH)
 
-select page from 1 to 5
-
-(only executor buttons - but U can turn off or turn on for all (executors and faders)
+select page from 1 to 5 (for executors)
 
 --------------
 
 SCHIFT BUTTON
 
-Display View change - from default to dark mode
+not used
 
 --------------
 
 MASTER BUTTON
 
-Black Out
+Enable Encoder (ON / OFF)
+
+When encoder is enabled - u can control all 4 encoder - select encoder (master 1 2 3 4)
 
 
 -------------
 
 
 
-last fader 
+Master fader 
 
 Grand master
 
 
 --------------
 
-ENCODER - not programed
-
+ENCODER - control encoders
 
 -----------------
 
