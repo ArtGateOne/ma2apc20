@@ -1,4 +1,4 @@
-//ma2apc20 by ArtGateOne beta 2
+//ma2apc20 by ArtGateOne v 1.2
 var easymidi = require('easymidi');
 var W3CWebSocket = require('websocket')
     .w3cwebsocket;
@@ -7,8 +7,8 @@ var client = new W3CWebSocket('ws://localhost:80/'); //U can change localhost(12
 
 //config 
 page_mode = 1;   //set page select mode - 0-off, 1-only exec buttons(5), 2-exec buttons and faders together
-midi_in = 'Akai APC20 0';     //set correct midi in device name
-midi_out = 'Akai APC20 1';    //set correct midi out device name
+midi_in = 'Akai APC20';     //set correct midi in device name
+midi_out = 'Akai APC20';    //set correct midi out device name
 display_mode = 1;   //display mode 1 = default, 2 = dark green
 
 
