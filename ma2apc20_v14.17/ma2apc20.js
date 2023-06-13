@@ -1,4 +1,4 @@
-//ma2apc20 by ArtGateOne v 1.3.5
+//ma2apc20 by ArtGateOne v 1.4.3
 var easymidi = require('easymidi');
 var W3CWebSocket = require('websocket')
     .w3cwebsocket;
@@ -15,6 +15,7 @@ var display_mode = 1;   //display mode 1 = default, 2 = dark green
 
 
 //global variables
+var viewbuttons = 1;
 var encodernr = 0;
 var encoderenabled = 1;
 if (wing == 0) {
@@ -66,12 +67,12 @@ if (wing == 0) {// 2 rows 101-108
     var buttons52 = [175, 176, 177, 178, 179, 180, 181, 182];
 
 } else if (wing == 2) {//3 rows 108-115
-    var buttons53 = [107, 108, 109, 110, 111, 112, 113, 114];
-    var buttons54 = [122, 123, 124, 125, 126, 127, 128, 129];
-    var buttons55 = [137, 138, 139, 140, 141, 142, 143, 144];
-    var buttons56 = [152, 153, 154, 155, 156, 157, 158, 159];
-    var buttons57 = [167, 168, 169, 170, 171, 172, 173, 174];
-    var buttons52 = [182, 183, 184, 185, 186, 187, 188, 189];
+    var buttons53 = [108, 109, 110, 111, 112, 113, 114];
+    var buttons54 = [123, 124, 125, 126, 127, 128, 129];
+    var buttons55 = [138, 139, 140, 141, 142, 143, 144];
+    var buttons56 = [153, 154, 155, 156, 157, 158, 159];
+    var buttons57 = [168, 169, 170, 171, 172, 173, 174];
+    var buttons52 = [183, 184, 185, 186, 187, 188, 189];
 
     //var faderValueMem[56] = 1;
 }
@@ -131,6 +132,8 @@ function midiclear() {
 }
 
 
+
+
 //clear terminal
 //console.log('\033[2J');
 
@@ -163,6 +166,15 @@ sleep(1000, function () {
 
 midiclear();
 
+if (wing == 2) {
+    if (display_mode == 2){
+        output.send('noteon', { note: 53, velocity: 1, channel: 7 });//red viewpage 1.1
+
+    }else{
+        output.send('noteon', { note: 53, velocity: 3, channel: 7 });//red viewpage 1.1
+
+    }
+}
 
 //turn on page select buttons
 if (page_mode > 0) {
@@ -178,27 +190,52 @@ if (page_mode > 0) {
 input.on('noteon', function (msg) {
 
     if (msg.note == 53) {
-        client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons53[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+        if (wing == 0 || wing == 1 || wing == 2 && msg.channel < 7) {
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons53[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+        } else {
+            check_led_view(msg.note);
+        }
     }
 
     else if (msg.note == 54) {
-        client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons54[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+        if (wing == 2 && msg.channel == 7) {
+            check_led_view(msg.note);
+        } else {
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons54[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+        }
     }
 
     else if (msg.note == 55) {
-        client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons55[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+        if (wing == 2 && msg.channel == 7) {
+            check_led_view(msg.note);
+        } else {
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons55[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+
+        }
     }
 
     else if (msg.note == 56) {
-        client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons56[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+        if (wing == 2 && msg.channel == 7) {
+            check_led_view(msg.note);
+        } else {
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons56[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+        }
     }
 
     else if (msg.note == 57) {
-        client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons57[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+        if (wing == 2 && msg.channel == 7) {
+            check_led_view(msg.note);
+        } else {
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons57[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+
+        }
     }
 
     else if (msg.note == 52) {
-        client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons52[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+        if (wing == 2 && msg.channel == 7) {
+        } else {
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + buttons52[msg.channel] + ',"pageIndex":' + pageIndex + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+        }
     }
 
     else if (msg.note == 51) {
@@ -213,7 +250,7 @@ input.on('noteon', function (msg) {
 
     else if (msg.note == 50) {//fader buttons
         if (wing == 2) {
-            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + (msg.channel + 7) + ',"pageIndex":' + pageIndex2 + ',"buttonId":2,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + (msg.channel + 8) + ',"pageIndex":' + pageIndex2 + ',"buttonId":2,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
         } else {
             client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + msg.channel + ',"pageIndex":' + pageIndex2 + ',"buttonId":2,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
         }
@@ -221,7 +258,7 @@ input.on('noteon', function (msg) {
 
     else if (msg.note == 49) {//fader buttons
         if (wing == 2) {
-            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + (msg.channel + 7) + ',"pageIndex":' + pageIndex2 + ',"buttonId":1,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + (msg.channel + 8) + ',"pageIndex":' + pageIndex2 + ',"buttonId":1,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
         } else {
             client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + msg.channel + ',"pageIndex":' + pageIndex2 + ',"buttonId":1,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
         }
@@ -229,7 +266,7 @@ input.on('noteon', function (msg) {
 
     else if (msg.note == 48) {//fader buttons
         if (wing == 2) {
-            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + (msg.channel + 7) + ',"pageIndex":' + pageIndex2 + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + (msg.channel + 8) + ',"pageIndex":' + pageIndex2 + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
 
         } else {
             client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + msg.channel + ',"pageIndex":' + pageIndex2 + ',"buttonId":0,"pressed":true,"released":false,"type":0,"session":' + session + ',"maxRequests":0}');
@@ -306,7 +343,7 @@ input.on('noteoff', function (msg) {
 
     else if (msg.note == 50) {
         if (wing == 2) {
-            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + (msg.channel + 7) + ',"pageIndex":' + pageIndex2 + ',"buttonId":2,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + (msg.channel + 8) + ',"pageIndex":' + pageIndex2 + ',"buttonId":2,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
         } else {
             client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + msg.channel + ',"pageIndex":' + pageIndex2 + ',"buttonId":2,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
         }
@@ -314,7 +351,7 @@ input.on('noteoff', function (msg) {
 
     else if (msg.note == 49) {
         if (wing == 2) {
-            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + (msg.channel + 7) + ',"pageIndex":' + pageIndex2 + ',"buttonId":1,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + (msg.channel + 8) + ',"pageIndex":' + pageIndex2 + ',"buttonId":1,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
         } else {
             client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + msg.channel + ',"pageIndex":' + pageIndex2 + ',"buttonId":1,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
         }
@@ -322,7 +359,7 @@ input.on('noteoff', function (msg) {
 
     else if (msg.note == 48) {
         if (wing == 2) {
-            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + (msg.channel + 7) + ',"pageIndex":' + pageIndex2 + ',"buttonId":0,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
+            client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + (msg.channel + 8) + ',"pageIndex":' + pageIndex2 + ',"buttonId":0,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
         } else {
             client.send('{"requestType":"playbacks_userInput","cmdline":"","execIndex":' + msg.channel + ',"pageIndex":' + pageIndex2 + ',"buttonId":0,"pressed":false,"released":true,"type":0,"session":' + session + ',"maxRequests":0}');
         }
@@ -345,7 +382,7 @@ input.on('cc', function (msg) {
         if (wing == 0 || wing == 1) {
             client.send('{"requestType":"playbacks_userInput","execIndex":' + msg.channel + ',"pageIndex":' + pageIndex2 + ',"faderValue":' + faderValue[msg.value] + ',"type":1,"session":' + session + ',"maxRequests":0}');
         } else if (wing == 2) {
-            client.send('{"requestType":"playbacks_userInput","execIndex":' + (msg.channel + 7) + ',"pageIndex":' + pageIndex2 + ',"faderValue":' + faderValue[msg.value] + ',"type":1,"session":' + session + ',"maxRequests":0}');
+            client.send('{"requestType":"playbacks_userInput","execIndex":' + (msg.channel + 8) + ',"pageIndex":' + pageIndex2 + ',"faderValue":' + faderValue[msg.value] + ',"type":1,"session":' + session + ',"maxRequests":0}');
         }
     }
 
@@ -695,7 +732,7 @@ client.onmessage = function (e) {
                     }
                 }
 
-                else if (wing == 2) {
+                else if (wing == 2) {//exec led wing 2
 
                     if (display_mode == 1) {
 
@@ -704,19 +741,19 @@ client.onmessage = function (e) {
                         var l = 1;//items
                         for (k = 0; k < 6; k++) {
 
-                            for (i = 0; i < 3; i++) {
+                            for (i = 0; i < 2; i++) {
                                 var m = 3;
-                                if (obj.itemGroups[0].items[l][(i + 2)].isRun == 1) { m = 1; }
-                                else if ((obj.itemGroups[0].items[l][(i + 2)].i.c) == "#000000") { m = 0; }
+                                if (obj.itemGroups[0].items[l][(i + 3)].isRun == 1) { m = 1; }
+                                else if ((obj.itemGroups[0].items[l][(i + 3)].i.c) == "#000000") { m = 0; }
                                 else { m = 5; }
                                 check_led(j, m, i);//note,velocity,channel
                             }
                             l++;
 
-                            for (i = 3; i < 8; i++) {
+                            for (i = 2; i < 7; i++) {
                                 var m = 3;
-                                if (obj.itemGroups[0].items[l][(i - 3)].isRun == 1) { m = 1; }
-                                else if ((obj.itemGroups[0].items[l][(i - 3)].i.c) == "#000000") { m = 0; }
+                                if (obj.itemGroups[0].items[l][(i - 2)].isRun == 1) { m = 1; }
+                                else if ((obj.itemGroups[0].items[l][(i - 2)].i.c) == "#000000") { m = 0; }
                                 else { m = 5; }
                                 check_led(j, m, i);//note,velocity,channel
                             }
@@ -729,14 +766,14 @@ client.onmessage = function (e) {
                         l--;
                         j = 52;
                         for (k = 0; k < 1; k++) {//52
-                            for (i = 0; i < 3; i++) {
-                                if (obj.itemGroups[0].items[l][(i + 2)].isRun == 1) { m = 1; }
+                            for (i = 0; i < 2; i++) {
+                                if (obj.itemGroups[0].items[l][(i + 3)].isRun == 1) { m = 1; }
                                 else { m = 0; }
                                 check_led(j, m, i);//note,velocity,channel
                             }
                             l++;
-                            for (i = 3; i < 8; i++) {
-                                if (obj.itemGroups[0].items[l][(i - 3)].isRun == 1) { m = 1; }
+                            for (i = 2; i < 7; i++) {
+                                if (obj.itemGroups[0].items[l][(i - 2)].isRun == 1) { m = 1; }
                                 else { m = 0; }
                                 check_led(j, m, i);//note,velocity,channel
 
@@ -749,11 +786,7 @@ client.onmessage = function (e) {
                                 if (i == encodernr) {
                                     m = 1;
                                 }
-
-                                if (mem[51][i] != m) {
-                                    mem[51][i] = m;
-                                    output.send('noteon', { note: 51, velocity: m, channel: i });
-                                }
+                                check_led(51, m, i);
                             }
                         }
                     }
@@ -764,25 +797,19 @@ client.onmessage = function (e) {
                         var l = 1;//items
                         for (k = 0; k < 6; k++) {
 
-                            for (i = 0; i < 3; i++) {
+                            for (i = 0; i < 2; i++) {
                                 var m = 3;
-                                if (obj.itemGroups[0].items[l][(i + 2)].isRun == 1) { m = 1; }
+                                if (obj.itemGroups[0].items[l][(i + 3)].isRun == 1) { m = 1; }
                                 else { m = 0; }
-                                if (mem[j][i] != m) {
-                                    mem[j][i] = m;
-                                    output.send('noteon', { note: j, velocity: m, channel: i });
-                                }
+                                check_led(j, m, i);
                             }
                             l++;
 
-                            for (i = 3; i < 8; i++) {
+                            for (i = 2; i < 7; i++) {
                                 var m = 3;
-                                if (obj.itemGroups[0].items[l][(i - 3)].isRun == 1) { m = 1; }
+                                if (obj.itemGroups[0].items[l][(i - 2)].isRun == 1) { m = 1; }
                                 else { m = 0; }
-                                if (mem[j][i] != m) {
-                                    mem[j][i] = m;
-                                    output.send('noteon', { note: j, velocity: m, channel: i });
-                                }
+                                check_led(j, m, i);
                             }
                             l++;
                             l++;
@@ -793,25 +820,18 @@ client.onmessage = function (e) {
                         l--;
                         j = 52;
                         for (k = 0; k < 1; k++) {//52
-                            for (i = 0; i < 3; i++) {
+                            for (i = 0; i < 2; i++) {
                                 var m = 3;
-                                if (obj.itemGroups[0].items[l][(i + 2)].isRun == 1) { m = 1; }
+                                if (obj.itemGroups[0].items[l][(i + 3)].isRun == 1) { m = 1; }
                                 else { m = 0; }
-                                if (mem[j][i] != m) {
-                                    mem[j][i] = m;
-                                    output.send('noteon', { note: j, velocity: m, channel: i });
-                                }
+                                check_led(j, m, i);
                             }
                             l++;
-                            for (i = 3; i < 8; i++) {
+                            for (i = 2; i < 7; i++) {
                                 var m = 3;
-                                if (obj.itemGroups[0].items[l][(i - 3)].isRun == 1) { m = 1; }
+                                if (obj.itemGroups[0].items[l][(i - 2)].isRun == 1) { m = 1; }
                                 else { m = 0; }
-                                if (mem[j][i] != m) {
-                                    mem[j][i] = m;
-                                    output.send('noteon', { note: j, velocity: m, channel: i });
-                                }
-
+                                check_led(j, m, i);//note,velocity,channel
                             }
                         }
                     }
@@ -822,11 +842,7 @@ client.onmessage = function (e) {
                             if (i == encodernr) {
                                 m = 1;
                             }
-
-                            if (mem[51][i] != m) {
-                                mem[51][i] = m;
-                                output.send('noteon', { note: 51, velocity: m, channel: i });
-                            }
+                            check_led(51, m, i);//note,velocity,channel
                         }
                     }
                 }
@@ -891,48 +907,64 @@ client.onmessage = function (e) {
 
                     if (display_mode == 1) {//default color - wing 2
                         j = 0;
-                        for (var i = 3; i < 8; i++) {
+                        for (var i = 2; i < 7; i++) {
                             m = 0;
-                            if ((obj.itemGroups[0].items[2][(i - 3)].i.c) != "#000000") { m = 1; }
-                            output.send('noteon', { note: 49, velocity: m, channel: i });
+                            if ((obj.itemGroups[0].items[2][(i - 2)].i.c) != "#000000") { m = 1; }
+                            check_led(49, m, i);
 
-                            if (obj.itemGroups[0].items[2][(i - 3)].isRun) { m = 1; }
+                            if (obj.itemGroups[0].items[2][(i - 2)].isRun) { m = 1; }
                             else { m = 0; }
-                            output.send('noteon', { note: 50, velocity: m, channel: i });
-                            output.send('noteon', { note: 48, velocity: m, channel: i });
+                            check_led(50, m, i);
+                            check_led(48, m, i);
                             j++;
                         }
 
-                        for (var i = 0; i < 3; i++) {
+                        for (var i = 0; i < 2; i++) {
 
-                            if ((obj.itemGroups[0].items[1][(i + 2)].i.c) == "#000000") { m = 0; }
+                            if ((obj.itemGroups[0].items[1][(i + 3)].i.c) == "#000000") { m = 0; }
                             else { m = 1; }
-                            output.send('noteon', { note: 49, velocity: m, channel: i });
+                            check_led(49, m, i);
 
-                            if (obj.itemGroups[0].items[1][(i + 2)].isRun) { m = 1; }
+                            if (obj.itemGroups[0].items[1][(i + 3)].isRun) { m = 1; }
                             else { m = 0; }
-                            output.send('noteon', { note: 50, velocity: m, channel: i });
-                            output.send('noteon', { note: 48, velocity: m, channel: i });
+                            check_led(50, m, i);
+                            check_led(48, m, i);
                             j++;
                         }
+
+                        if ((obj.itemGroups[0].items[3][0].i.c) == "#000000") { m = 0; }
+                        else { m = 1; }
+                        output.send('noteon', { note: 49, velocity: m, channel: i });
+                        check_led(49, m, 7)
+                        if (obj.itemGroups[0].items[3][(0)].isRun) { m = 1; }
+                        else { m = 0; }
+                        check_led(50, m, 7);//note,velocity,channel
+                        check_led(48, m, 7);
+
                     } else if (display_mode == 2) {//dark green wing 2
                         j = 0;
-                        for (var i = 3; i < 8; i++) {
+                        for (var i = 2; i < 7; i++) {
 
-                            if (obj.itemGroups[0].items[2][(i - 3)].isRun) { m = 1; }
+                            if (obj.itemGroups[0].items[2][(i - 2)].isRun) { m = 1; }
                             else { m = 0; }
                             check_led(50, m, i);//note,velocity,channel
                             j++;
                         }
 
-                        for (var i = 0; i < 3; i++) {
+                        for (var i = 0; i < 2; i++) {
 
-                            if (obj.itemGroups[0].items[1][(i + 2)].isRun) { m = 1; }
+                            if (obj.itemGroups[0].items[1][(i + 3)].isRun) { m = 1; }
                             else { m = 0; }
                             check_led(50, m, i);
 
                             j++;
                         }
+
+                        if (obj.itemGroups[0].items[3][(0)].isRun) { m = 1; }
+                        else { m = 0; }
+                        check_led(50, m, 7);//note,velocity,channel
+
+
                     }
                 }
             }
@@ -940,11 +972,23 @@ client.onmessage = function (e) {
     }
 };
 
-
 function check_led(note, velocity, channel) {
     if (mem[note][channel] != velocity) {
         mem[note][channel] = velocity;
         output.send('noteon', { note: note, velocity: velocity, channel: channel });
     }
+    return;
+}
+
+function check_led_view(view) {
+    output.send('noteon', { note: (viewbuttons + 52), velocity: 0, channel: 7 }); // off view red led
+    viewbuttons = view - 52;
+    if (display_mode == 2) {
+        output.send('noteon', { note: (viewbuttons + 52), velocity: 1, channel: 7 });
+    } else {
+        output.send('noteon', { note: (viewbuttons + 52), velocity: 3, channel: 7 });
+    }
+    client.send('{"command":"ViewButton 1.'+viewbuttons+' /screen=2","session":' + session + ',"requestType":"command","maxRequests":0}');
+
     return;
 }
