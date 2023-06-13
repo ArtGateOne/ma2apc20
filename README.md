@@ -19,8 +19,11 @@ ADD user "apc20" password "remote"
 
 Turn on web remote (Global settings/ remote/ login enable
 
+Run my code - open ma2apc20 with node.exe (set is as default open tool for .js files)
 
-Start my code from CMD line
+
+
+Or tart my code from CMD line
 
 node ma2apc20
 
@@ -30,30 +33,39 @@ node ma2apc20
 
 Program on start schows all available midi devices MIDI IN & MIDI OUT
 
-
-If You APC have diferent number (default 0 IN, 1 OUT) U need open ma2apc20.js in notepad & change to correct numbers.
-
---------------------
-
-
-If U want connect to console or other ON PC - U can change default (localhost) to Console IP Addres
-
-open ma2apc20.js use notepad
-
-find line
-
-var client = new W3CWebSocket('ws://localhost:80/');
-
-
-change "localhost" to ip addres. 
-
-
 --------------------
 
 CONTROL SURFACE
 
 
-SET WIEW TO 2 ROWS EXECUTOR VIEW IN MA2
+WING 1 - mode
+
+buttons 101 - 108
+faders 1 - 8
+
+-------
+
+WING 2
+Buttons 108 -115
+Faders 8-15
+
+----
+
+RED 1 2 3 4 (PLAY STOP REC MIDI...) is encoder selector
+
+use encoder to control on screen encoder
+
+MASTER Button is BO
+
+------------
+
+Master Fader = Grand Master
+---------------------------
+
+
+When set WING 0 (in file config)
+
+SET VIEW TO 2 ROWS EXECUTOR VIEW IN MA2
 
 
 EXECUTOR BUTTONS
@@ -74,10 +86,7 @@ EXECUTOR BUTTONS
 
 
 
-FADER BUTTONS
-
-1 - 8
-
+FADER BUTTONS 2 ROWS
 
 FADERS
 
@@ -88,7 +97,7 @@ FADERS
 
 BUTTONS ON THE RIGHT SIDE (SCENE LAUCH)
 
-select page from 1 to 5 (for executors)
+select page from 1 to 5 (only for executors if page_select mode is 1)
 
 --------------
 
@@ -123,3 +132,5 @@ ENCODER - control encoders
 !!! Program not work with old ma2onpc
 
 !! Program not work - if any executor have more then 1 row ! (thx Philipp Darpe)
+
+! If U see on window Undefined 1 - Your MA2 is not supported (too old)
