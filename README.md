@@ -46,12 +46,13 @@ faders 1 - 8
 -------
 
 WING 2
-Buttons 108 -115
-Faders 8-15
+Buttons 109 -115
+Faders 9-16!
+Red buttons is viewbuttons selection 1-5
 
 ----
 
-RED 1 2 3 4 (PLAY STOP REC MIDI...) is encoder selector
+1 2 3 4 (PLAY STOP REC MIDI...) is encoder selector
 
 use encoder to control on screen encoder
 
